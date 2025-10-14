@@ -1,0 +1,528 @@
+{
+  "info": {
+    "name": "HSE Buddy Backend API",
+    "description": "Complete API collection for HSE Buddy application with demo data",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "health"]
+        }
+      }
+    },
+    {
+      "name": "User Management",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Supervisor\",\n  \"email\": \"supervisor@hse.com\",\n  \"password\": \"password123\",\n  \"role\": \"supervisor\",\n  \"phone\": \"+1234567890\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"supervisor@hse.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "login"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Site Management",
+      "item": [
+        {
+          "name": "Create Site",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"site_name\": \"Industrial Plant A\",\n  \"location\": {\n    \"address\": \"123 Industrial Ave\",\n    \"city\": \"Houston\",\n    \"state\": \"Texas\",\n    \"country\": \"USA\",\n    \"zip_code\": \"77001\"\n  },\n  \"products_stored\": []\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/sites/create-site",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "sites", "create-site"]
+            }
+          }
+        },
+        {
+          "name": "Fetch All Sites",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/sites/fetch-all-sites",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "sites", "fetch-all-sites"]
+            }
+          }
+        },
+        {
+          "name": "Fetch Products by Site ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/sites/fetch-products/{{siteId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "sites", "fetch-products", "{{siteId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Product Management",
+      "item": [
+        {
+          "name": "Create Product",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"equip_name\": \"Safety Valve\",\n  \"description\": \"High pressure safety valve for industrial use\",\n  \"actual_equip_id\": \"SV-EQUIP-001\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/products/create-product",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products", "create-product"]
+            }
+          }
+        },
+        {
+          "name": "Fetch All Products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/fetch-all-products",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products", "fetch-all-products"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "New Listing (Temp Items & Parts)",
+      "item": [
+        {
+          "name": "Add Item to Site (Inspector)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{inspectorToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"siteId\": \"{{siteId}}\",\n  \"productId\": \"{{productId}}\",\n  \"serial_number\": \"SV-001-2024\",\n  \"name\": \"Safety Valve Unit 1\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/sites/add-items-site",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "sites", "add-items-site"]
+            }
+          }
+        },
+        {
+          "name": "Add Part to Item (Inspector)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{inspectorToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"{{productId}}\",\n  \"itemId\": \"{{itemId}}\",\n  \"part_name\": \"Pressure Gauge\",\n  \"part_number\": \"PG-2024-001\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/sites/add-parts-items",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "sites", "add-parts-items"]
+            }
+          }
+        },
+        {
+          "name": "Fetch All Temp Items",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/sites/fetch-all-temp-items",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "sites", "fetch-all-temp-items"]
+            }
+          }
+        },
+        {
+          "name": "Fetch All Temp Parts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/sites/fetch-all-temp-parts",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "sites", "fetch-all-temp-parts"]
+            }
+          }
+        },
+        {
+          "name": "Approve/Reject Temp Item",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tempItemId\": \"{{tempItemId}}\",\n  \"status\": \"Approved\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/sites/temp-item-status-change",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "sites", "temp-item-status-change"]
+            }
+          }
+        },
+        {
+          "name": "Approve/Reject Temp Part",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tempPartId\": \"{{tempPartId}}\",\n  \"status\": \"Rejected\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/sites/temp-part-status-change",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "sites", "temp-part-status-change"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Server-Sent Events (SSE)",
+      "item": [
+        {
+          "name": "Connect to SSE Stream",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "text/event-stream"
+              },
+              {
+                "key": "Cache-Control",
+                "value": "no-cache"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/sse/events",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "sse", "events"]
+            }
+          }
+        },
+        {
+          "name": "Send SSE Message",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"New inspection task assigned to Inspector John\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/sse/send",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "sse", "send"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Task Management",
+      "item": [
+        {
+          "name": "Create Task",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supervisorToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Monthly Safety Inspection\",\n  \"description\": \"Conduct comprehensive safety inspection of all equipment\",\n  \"assigned_to\": \"{{inspectorId}}\",\n  \"site_id\": \"{{siteId}}\",\n  \"due_date\": \"2024-11-15T10:00:00.000Z\",\n  \"priority\": \"high\",\n  \"task_type\": \"inspection\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/tasks/create-task",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tasks", "create-task"]
+            }
+          }
+        },
+        {
+          "name": "Fetch All Tasks",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/tasks/get-all-tasks",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tasks", "get-all-tasks"]
+            }
+          }
+        },
+        {
+          "name": "Get Task Status (Supervisor)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/tasks/get-task-status-supervisor?supervisorId={{supervisorId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tasks", "get-task-status-supervisor"],
+              "query": [
+                {
+                  "key": "supervisorId",
+                  "value": "{{supervisorId}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Task Status (Inspector)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/tasks/get-task-status-inspector?userId={{inspectorId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tasks", "get-task-status-inspector"],
+              "query": [
+                {
+                  "key": "userId",
+                  "value": "{{inspectorId}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get All Recurring Tasks",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/tasks/get-all-recurring-task",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tasks", "get-all-recurring-task"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Inspection Forms",
+      "item": [
+        {
+          "name": "Create Inspection Form",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{inspectorToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"task_id\": \"{{taskId}}\",\n  \"site_id\": \"{{siteId}}\",\n  \"equipment_inspected\": [\n    {\n      \"equipment_name\": \"Safety Valve\",\n      \"serial_number\": \"SV-001-2024\",\n      \"status\": \"Good\",\n      \"notes\": \"All parameters within normal range\",\n      \"parts_checked\": [\n        {\n          \"part_name\": \"Pressure Gauge\",\n          \"part_number\": \"PG-2024-001\",\n          \"condition\": \"Excellent\",\n          \"action_required\": \"None\"\n        }\n      ]\n    }\n  ],\n  \"overall_status\": \"Passed\",\n  \"recommendations\": \"Continue regular maintenance schedule\",\n  \"next_inspection_date\": \"2024-12-15T10:00:00.000Z\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/forms/create-form",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "forms", "create-form"]
+            }
+          }
+        },
+        {
+          "name": "Fetch All Forms",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/forms/fetch-all-forms",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "forms", "fetch-all-forms"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "your_jwt_token_here",
+      "type": "string"
+    },
+    {
+      "key": "supervisorToken",
+      "value": "supervisor_jwt_token_here",
+      "type": "string"
+    },
+    {
+      "key": "inspectorToken",
+      "value": "inspector_jwt_token_here",
+      "type": "string"
+    },
+    {
+      "key": "siteId",
+      "value": "site_object_id_here",
+      "type": "string"
+    },
+    {
+      "key": "productId",
+      "value": "product_object_id_here",
+      "type": "string"
+    },
+    {
+      "key": "itemId",
+      "value": "item_object_id_here",
+      "type": "string"
+    },
+    {
+      "key": "tempItemId",
+      "value": "temp_item_object_id_here",
+      "type": "string"
+    },
+    {
+      "key": "tempPartId",
+      "value": "temp_part_object_id_here",
+      "type": "string"
+    },
+    {
+      "key": "inspectorId",
+      "value": "inspector_user_id_here",
+      "type": "string"
+    },
+    {
+      "key": "taskId",
+      "value": "task_object_id_here",
+      "type": "string"
+    },
+    {
+      "key": "supervisorId",
+      "value": "supervisor_user_id_here",
+      "type": "string"
+    }
+  ]
+}

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>HSE Buddy Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin: 5px;
+        }
+        #response, #dashboardData {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            white-space: pre-wrap;
+        }
+        .dashboard-section {
+            margin-top: 20px;
+            display: none;
+        }
+        .dashboard-buttons {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="loginSection">
+        <h2>HSE Buddy Login</h2>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" value="supervisor@test.com">
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" value="password123">
+        </div>
+        <button onclick="login()">Login</button>
+        <div id="response"></div>
+    </div>
+
+    <div id="dashboardSection" class="dashboard-section">
+        <h2>Dashboard</h2>
+        <div class="dashboard-buttons">
+            <button onclick="getAllTasks()">View All Tasks</button>
+            <button onclick="getAllSites()">View All Sites</button>
+            <button onclick="getAllInspectors()">View All Inspectors</button>
+            <button onclick="getAllSupervisors()">View All Supervisors</button>
+        </div>
+        <div id="dashboardData"></div>
+    </div>
+
+    <script>
+        let authToken = '';
+
+        function showDashboard() {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('dashboardSection').style.display = 'block';
+        }
+
+        function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const responseDiv = document.getElementById('response');
+
+            fetch('http://localhost:5000/api/users/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email, password })
+            })
+            .then(response => response.json())
+            .then(data => {
+                responseDiv.innerHTML = JSON.stringify(data, null, 2);
+                if (data.token) {
+                    authToken = data.token;
+                    showDashboard();
+                }
+            })
+            .catch(error => {
+                responseDiv.innerHTML = 'Error: ' + error.message;
+            });
+        }
+
+        function makeAuthenticatedRequest(url) {
+            return fetch(url, {
+                headers: {
+                    'Authorization': `Bearer ${authToken}`
+                }
+            }).then(response => response.json());
+        }
+
+        function getAllTasks() {
+            makeAuthenticatedRequest('http://localhost:5000/api/tasks/get-all-tasks')
+                .then(data => {
+                    document.getElementById('dashboardData').innerHTML = JSON.stringify(data, null, 2);
+                })
+                .catch(error => {
+                    document.getElementById('dashboardData').innerHTML = 'Error: ' + error.message;
+                });
+        }
+
+        function getAllSites() {
+            makeAuthenticatedRequest('http://localhost:5000/api/sites/fetch-all-sites')
+                .then(data => {
+                    document.getElementById('dashboardData').innerHTML = JSON.stringify(data, null, 2);
+                })
+                .catch(error => {
+                    document.getElementById('dashboardData').innerHTML = 'Error: ' + error.message;
+                });
+        }
+
+        function getAllInspectors() {
+            makeAuthenticatedRequest('http://localhost:5000/api/users/get-all-inspectors')
+                .then(data => {
+                    document.getElementById('dashboardData').innerHTML = JSON.stringify(data, null, 2);
+                })
+                .catch(error => {
+                    document.getElementById('dashboardData').innerHTML = 'Error: ' + error.message;
+                });
+        }
+
+        function getAllSupervisors() {
+            makeAuthenticatedRequest('http://localhost:5000/api/users/get-all-supervisors')
+                .then(data => {
+                    document.getElementById('dashboardData').innerHTML = JSON.stringify(data, null, 2);
+                })
+                .catch(error => {
+                    document.getElementById('dashboardData').innerHTML = 'Error: ' + error.message;
+                });
+        }
+    </script>
+</body>
+</html>

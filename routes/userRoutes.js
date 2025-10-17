@@ -1,7 +1,7 @@
 const express = require("express"); 
 router = express.Router(); 
 const multer = require("multer");
-const {login, register, createUser, searchUser, editProfile, validateSuperAdmin, getAllInspectors, getAllSupervisors} = require("../controllers/userController"); 
+const {login, register, createUser, searchUser, editProfile, validateSuperAdmin, getAllInspectors, getAllSupervisors, getAllSuperAdmins, getAllUsers} = require("../controllers/userController"); 
 const {authMiddleware,superAdminMiddleware} = require("../middlewares/authMiddleware"); 
 
 const storage = multer.memoryStorage(); 
@@ -16,6 +16,8 @@ router.get("/validate-super-admin", validateSuperAdmin);
 router.post("/create-user",authMiddleware,superAdminMiddleware,createUser);
 router.get("/get-all-supervisors",authMiddleware,superAdminMiddleware,getAllSupervisors);
 router.get("/get-all-inspectors",authMiddleware,superAdminMiddleware,getAllInspectors);
+router.get("/get-all-superadmins",authMiddleware,superAdminMiddleware,getAllSuperAdmins);
+router.get("/get-all-users",authMiddleware,superAdminMiddleware,getAllUsers);
 router.get("/search-users", searchUser); 
 router.post("/edit-user",upload.single("file"), editProfile);
 

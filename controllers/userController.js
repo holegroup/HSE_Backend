@@ -71,9 +71,9 @@ async function register(req, res) {
         }
         
         // Validate role
-        if (!['inspector', 'supervisor'].includes(role)) {
+        if (!['inspector', 'supervisor', 'superadmin'].includes(role)) {
             return res.status(400).json({ 
-                message: 'Invalid role. Must be either inspector or supervisor' 
+                message: 'Invalid role. Must be inspector, supervisor, or superadmin' 
             });
         }
         
@@ -120,8 +120,8 @@ async function createUser(req, res) {
         if (user) {
            return res.status(400).json({ message: "Already Exists" });
         }
-        if (!['inspector', 'supervisor'].includes(role)) {
-            return res.status(400).json({ message: 'Invalid role' });
+        if (!['inspector', 'supervisor', 'superadmin'].includes(role)) {
+            return res.status(400).json({ message: 'Invalid role. Must be inspector, supervisor, or superadmin' });
         }
         user = new User({ name, email, password, role });
 
@@ -320,12 +320,48 @@ async function getAllInspectors(__, res){
     try{ 
         const inspectors = await User.find({ role: 'inspector' }).select('-password'); 
         if(inspectors.length === 0){ 
-            return res.status(404).json({messgae: "No Supervisors Found"}); 
+            return res.status(404).json({messgae: "No Inspectors Found"}); 
         }
 
         return res.status(200).json({ 
-            message: "Supervisors", 
+            message: "Inspectors", 
             data: inspectors, 
+        })
+    }catch(e){ 
+        return res.status(500).json({ 
+            message: e.message
+        })
+    }
+};
+
+async function getAllSuperAdmins(__, res){ 
+    try{ 
+        const superadmins = await User.find({ role: 'superadmin' }).select('-password'); 
+        if(superadmins.length === 0){ 
+            return res.status(404).json({messgae: "No Super Admins Found"}); 
+        }
+
+        return res.status(200).json({ 
+            message: "Super Admins", 
+            data: superadmins, 
+        })
+    }catch(e){ 
+        return res.status(500).json({ 
+            message: e.message
+        })
+    }
+};
+
+async function getAllUsers(__, res){ 
+    try{ 
+        const users = await User.find({}).select('-password'); 
+        if(users.length === 0){ 
+            return res.status(404).json({messgae: "No Users Found"}); 
+        }
+
+        return res.status(200).json({ 
+            message: "All Users", 
+            data: users, 
         })
     }catch(e){ 
         return res.status(500).json({ 
@@ -335,7 +371,7 @@ async function getAllInspectors(__, res){
 }; 
 
 
-module.exports = {login, register, createUser, searchUser, editProfile, validateSuperAdmin, getAllSupervisors, getAllInspectors}; 
+module.exports = {login, register, createUser, searchUser, editProfile, validateSuperAdmin, getAllSupervisors, getAllInspectors, getAllSuperAdmins, getAllUsers}; 
 
 
 

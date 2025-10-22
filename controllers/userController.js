@@ -53,12 +53,45 @@ async function login(req, res){
 // Public registration function (no auth required)
 async function register(req, res) {
     const { name, email, password, role } = req.body;
+    console.log('Registration request received:', { name, email, role }); // Debug log
     
     try {
         // Input validation
         if (!name || !email || !password || !role) {
             return res.status(400).json({ 
+                success: false,
                 message: "All fields are required: name, email, password, role" 
+            });
+        }
+
+        // Special handling for superadmin registration
+        if (role === 'superadmin') {
+            const existingSuperAdmin = await User.findOne({ role: 'superadmin' });
+            if (existingSuperAdmin) {
+                return res.status(400).json({
+                    success: false,
+                    message: "A Super Admin already exists in the system"
+                });
+            }
+        }
+
+        // If registering as superadmin, check if one already exists
+        if (role === 'superadmin') {
+            const existingSuperAdmin = await User.findOne({ role: 'superadmin' });
+            if (existingSuperAdmin) {
+                return res.status(400).json({
+                    success: false,
+                    message: "A Super Admin already exists in the system"
+                });
+            }
+        }
+
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({
+                success: false,
+                message: "Please provide a valid email address"
             });
         }
         
@@ -66,6 +99,7 @@ async function register(req, res) {
         let user = await User.findOne({ email: email });
         if (user) {
             return res.status(400).json({ 
+                success: false,
                 message: "User already exists with this email" 
             });
         }
@@ -73,7 +107,16 @@ async function register(req, res) {
         // Validate role
         if (!['inspector', 'supervisor', 'superadmin'].includes(role)) {
             return res.status(400).json({ 
+                success: false,
                 message: 'Invalid role. Must be inspector, supervisor, or superadmin' 
+            });
+        }
+
+        // Validate password strength
+        if (password.length < 6) {
+            return res.status(400).json({
+                success: false,
+                message: "Password must be at least 6 characters long"
             });
         }
         
@@ -92,6 +135,7 @@ async function register(req, res) {
         const token = jwt.sign(payload, process.env.JWT_SECRET);
         
         return res.status(201).json({
+            success: true,
             message: `Welcome ${user.name}! Your account has been created successfully.`,
             user: {
                 _id: user._id,
@@ -103,7 +147,14 @@ async function register(req, res) {
         });
     } catch (e) {
         console.error('Registration error:', e);
+        if (e.name === 'MongoError' && e.code === 11000) {
+            return res.status(400).json({
+                success: false,
+                message: "Email address is already registered"
+            });
+        }
         return res.status(500).json({
+            success: false,
             message: "Registration failed. Please try again.",
             error: e.message
         });

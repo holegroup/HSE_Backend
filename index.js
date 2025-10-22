@@ -26,15 +26,52 @@ app.get("/", (req, res) => {
 });
 
 // Health check endpoint
-app.get("/api/health", (req, res) => {
-    res.status(200).json({
-        status: "OK",
-        message: "HSE Buddy API is healthy",
-        timestamp: new Date().toISOString(),
-        environment: process.env.NODE_ENV || "development",
-        port: PORT,
-        mongodb: process.env.MONGO_URI
-    });
+app.get("/api/health", async (req, res) => {
+    try {
+        // Test MongoDB connection
+        const dbState = mongoose.connection.readyState;
+        const dbStatus = {
+            0: "disconnected",
+            1: "connected",
+            2: "connecting",
+            3: "disconnecting"
+        };
+
+        // Set CORS headers specifically for this endpoint
+        res.header('Access-Control-Allow-Origin', '*');
+        res.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
+        res.header('Access-Control-Allow-Headers', 'Content-Type');
+
+        // Send response
+        res.status(200).json({
+            success: true,
+            status: "OK",
+            message: "HSE Buddy API is healthy",
+            timestamp: new Date().toISOString(),
+            environment: process.env.NODE_ENV || "development",
+            port: PORT,
+            database: {
+                status: dbStatus[dbState],
+                connected: dbState === 1
+            },
+            server: {
+                uptime: process.uptime()
+            }
+        });
+    } catch (error) {
+        console.error('Health check error:', error);
+        // Set CORS headers even for error responses
+        res.header('Access-Control-Allow-Origin', '*');
+        res.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
+        res.header('Access-Control-Allow-Headers', 'Content-Type');
+        
+        res.status(500).json({
+            success: false,
+            status: "ERROR",
+            message: "Health check failed",
+            error: error.message
+        });
+    }
 });
 
 // API info endpoint
@@ -56,9 +93,25 @@ app.get("/api", (req, res) => {
 });
 
 // middlewares for server
-console.log("Here")
+app.use(cors({
+    origin: ['http://localhost:55368', 'http://localhost:3000', 'http://localhost:5000'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+    credentials: true
+}));
+
+// Add custom CORS headers for all routes
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept');
+    if (req.method === 'OPTIONS') {
+        return res.status(200).end();
+    }
+    next();
+});
+
 app.use(bodyParser.json());
-app.use(cors());
 
 // connecting to db
 connectDB();

@@ -103,7 +103,15 @@ app.get("/api", (req, res) => {
 
 // middlewares for server
 app.use(cors({
-    origin: ['http://localhost:55368', 'http://localhost:3000', 'http://localhost:5000'],
+    origin: [
+        'http://localhost:55368', 
+        'http://localhost:3000', 
+        'http://localhost:5000',
+        'http://localhost:52605',
+        'http://localhost:56789',
+        'http://localhost:8080',
+        /^http:\/\/localhost:\d+$/  // Allow any localhost port
+    ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
     credentials: true

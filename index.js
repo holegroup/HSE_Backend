@@ -104,11 +104,26 @@ app.get("/api", (req, res) => {
 // middlewares for server
 // Allow all origins for development and production
 app.use(cors({
+<<<<<<< HEAD
     origin: true, // Allow all origins
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
     credentials: true,
     optionsSuccessStatus: 200
+=======
+    origin: [
+        'http://localhost:55368', 
+        'http://localhost:3000', 
+        'http://localhost:5000',
+        'http://localhost:52605',
+        'http://localhost:56789',
+        'http://localhost:8080',
+        /^http:\/\/localhost:\d+$/  // Allow any localhost port
+    ],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+    credentials: true
+>>>>>>> 70ddf9ac628ee6be8fd7f45a33ac9d8c13196e57
 }));
 
 // Add custom CORS headers for all routes as backup

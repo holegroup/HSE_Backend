@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const connectDB = require("./config/db");
+const mongoose = require("mongoose");
 const PORT = process.env.PORT || 5000;
 const schedule = require("node-schedule");
 
@@ -28,19 +29,26 @@ app.get("/", (req, res) => {
 // Health check endpoint
 app.get("/api/health", async (req, res) => {
     try {
-        // Test MongoDB connection
-        const dbState = mongoose.connection.readyState;
+        // Set CORS headers
+        res.header('Access-Control-Allow-Origin', '*');
+        res.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
+        res.header('Access-Control-Allow-Headers', 'Content-Type');
+
+        // Get MongoDB connection status
+        let dbState = 0;
+        let dbConnected = false;
+        
+        if (mongoose && mongoose.connection) {
+            dbState = mongoose.connection.readyState;
+            dbConnected = dbState === 1;
+        }
+
         const dbStatus = {
             0: "disconnected",
             1: "connected",
             2: "connecting",
             3: "disconnecting"
         };
-
-        // Set CORS headers specifically for this endpoint
-        res.header('Access-Control-Allow-Origin', '*');
-        res.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
-        res.header('Access-Control-Allow-Headers', 'Content-Type');
 
         // Send response
         res.status(200).json({
@@ -51,8 +59,9 @@ app.get("/api/health", async (req, res) => {
             environment: process.env.NODE_ENV || "development",
             port: PORT,
             database: {
-                status: dbStatus[dbState],
-                connected: dbState === 1
+                status: dbStatus[dbState] || "unknown",
+                connected: dbConnected,
+                uri: process.env.MONGO_URI ? "configured" : "not configured"
             },
             server: {
                 uptime: process.uptime()
@@ -69,7 +78,7 @@ app.get("/api/health", async (req, res) => {
             success: false,
             status: "ERROR",
             message: "Health check failed",
-            error: error.message
+            error: error.message || "Unknown error occurred"
         });
     }
 });
@@ -114,7 +123,14 @@ app.use((req, res, next) => {
 app.use(bodyParser.json());
 
 // connecting to db
-connectDB();
+(async () => {
+    try {
+        await connectDB();
+        console.log('Database connection initialized');
+    } catch (error) {
+        console.error('Failed to initialize database connection:', error);
+    }
+})();
 
 // defining the routes
 // user routes
